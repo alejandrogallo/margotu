@@ -1,0 +1,23 @@
+{
+  "authors" : [
+    "Alejandro Gallo <alejandro.gallo@tuwien.ac.at>"
+  ],
+  "build-depends" : [ ],
+  "depends" : [ ],
+  "description" : "Raku drawing program",
+  "license" : "GPLv3",
+  "meta6" : "0",
+  "name" : "Margotu",
+  "perl" : "6.*",
+  "provides" : {
+    "Margotu" : "lib/Margotu.pm"
+  },
+  "resources" : [ ],
+  "source-url" : "https://gitlab.com/alejandroamsg/margotu.git",
+  "support" : {
+    "source" : "https://gitlab.com/alejandroamsg/margotu"
+  },
+  "tags" : [ ],
+  "test-depends" : [ ],
+  "version" : "0.0.1"
+}
