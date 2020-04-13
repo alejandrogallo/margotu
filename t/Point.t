@@ -18,7 +18,8 @@ subtest 'Point constructors', {
   is-deeply Point.new([1,2]), 1 v 2, 'List constructor (1,2)';
   is-deeply Point.new([1,2,3]), ([<>] 1vx, 2vy, 3vz), 'List constructor (1,2,3)';
 
-  is-deeply v(1,2,3), ([<>] 1vx, 2vy, 3vz), 'List constructor (1,2,3)';
+  is-deeply v(1,2,3), ([<>] 1vx, 2vy, 3vz), 'constructor circumfix v()';
+  is-deeply v<1 2 3.3>, ([<>] 1vx, 2vy, 3.3vz), 'constructor prefix v';
 
 
 };

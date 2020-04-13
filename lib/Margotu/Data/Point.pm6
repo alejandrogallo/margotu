@@ -14,10 +14,12 @@ class Point is export does Monoid[Point] {
   # monoidal structure
   method mempty of Point { Point.new }
   method mappend (Point $a) of Point { Point.new: [Z+] $.list, $a.list }
-
 }
 
 sub infix:<v> (*@a) is assoc<list> is export { Point.new: @a }
+multi circumfix:<v( )>(*@a) of Point is export { Point.new: @a }
+multi prefix:<v>(*@a) of Point is export { Point.new: @a».Real }
+
 multi postfix:<vx> (Real $x) of Point is export { $x v 0  }
 multi postfix:<vy> (Real $y) of Point is export { 0  v $y }
 multi postfix:<vz> (Real $z) of Point is export { [v] 0, 0, $z }
@@ -33,8 +35,6 @@ multi infix:<-> (Point $a, Point $b) is export { [v] $a.list Z- $b.list }
 
 multi abs(Point $a) of Num is export { $a.abs }
 multi circumfix:<I I>(Point $a) of Num is export { $a.abs }
-
-multi circumfix:<v( )>(*@a) of Point is export { Point.new: @a }
 
 multi infix:<L> (Point $a, Point $b) is export of Bool { ($a * $b) eq 0 }
 
