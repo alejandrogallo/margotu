@@ -1,56 +1,52 @@
 unit module Margotu::Data::Point;
-
 use Margotu::Data::Monoid;
-
 
 class Point { ... }
 class Point is export does Monoid[Point] {
-  my Point $outer;
   has Real $.x=0; has Real $.y=0; has Real $.z = 0;
   method gist of Str { "($!x $!y $!z)" }
-  method list { $!x, $!y, $!z }
-  method abs of Real { sqrt([+] $.list Z* $.list) }
+  method list { ($!x, $!y, $!z) }
+  method abs of Num { sqrt([+] [Z*] $_, $_) given $.list }
 
-  # monoid
-  method mempty { Point.new }
-  method mappend (Point $a) of Point {
-    Point.new: |hash <x y z> Z=> [Z+] $.list, $a.list
-  }
+  # construct from list
+  multi method new (@a) { self.bless(|hash <x y z> Z=> @a) }
+
+  # monoidal structure
+  method mempty of Point { Point.new }
+  method mappend (Point $a) of Point { Point.new: [Z+] $.list, $a.list }
 
 }
 
-multi sub infix:<v> (Real $a, Real $b) is export { Point.new: x=>$a, y=>$b }
+sub infix:<v> (*@a) is assoc<list> is export { Point.new: @a }
+multi postfix:<vx> (Real $x) of Point is export { $x v 0  }
+multi postfix:<vy> (Real $y) of Point is export { 0  v $y }
+multi postfix:<vz> (Real $z) of Point is export { [v] 0, 0, $z }
 
-multi sub infix:<v> (Point $a, Real $b) is export {
-  Point.new: x=>$a.x, y=>$a.y, z=>$b
+multi scalar-product (Point $a, Point $b) of Real is export { [+] ($a.list Z* $b.list) }
+multi infix:<*> (Point $a, Point $b) of Real is export { scalar-product $a, $b }
+multi infix:<*> (Real $a, Point $b) of Point is export { [v] map $a * *, $b.list }
+
+multi sum (Point $a, Point $b) of Point is export { $a <> $b }
+
+multi prefix:<-> (Point $a) of Point is export { [v] map -*, $a.list }
+multi infix:<-> (Point $a, Point $b) is export { [v] $a.list Z- $b.list }
+
+multi abs(Point $a) of Num is export { $a.abs }
+multi circumfix:<I I>(Point $a) of Num is export { $a.abs }
+
+multi circumfix:<v( )>(*@a) of Point is export { Point.new: @a }
+
+multi infix:<L> (Point $a, Point $b) is export of Bool { ($a * $b) eq 0 }
+
+multi infix:<||> (Point $a, Point $b) is export of Bool { not $a L $b }
+
+multi angle(Point $a, Point $b) of Real is export {
+  (0 eq $a.abs * $b.abs) ?? 0.0 !! .acos given ($a * $b) / ($a.abs * $b.abs)
 }
+multi infix:<∠> (Point $a, Point $b) of Real is export { angle $a, $b }
+multi infix:<V> (Point $a, Point $b) of Real is export { angle $a, $b }
 
-multi sub postfix:<vx> (Real $x) of Point is export { $x v 0  v 0 }
-multi sub postfix:<vy> (Real $y) of Point is export { 0  v $y v 0 }
-multi sub postfix:<vz> (Real $z) of Point is export { 0  v 0  v $z}
-
-multi sub scalar-product (Point $a, Point $b) of Real is export { [+] ($a.list Z* $b.list) }
-multi sub infix:<*> (Point $a, Point $b) of Real is export { scalar-product $a, $b }
-multi sub infix:<*> (Real $a, Point $b) of Point is export { [v] map $a * *, $b.list }
-
-multi sub sum (Point $a, Point $b) of Point is export { $a <> $b }
-
-multi sub prefix:<-> (Point $a) of Point is export { [v] map -*, $a.list }
-multi sub infix:<-> (Point $a, Point $b) is export { [v] $a.list Z- $b.list }
-
-multi sub abs(Point $a) is export { $a.abs }
-multi sub circumfix:<I I>(Point $a) of Real is export { $a.abs }
-
-multi sub infix:<L> (Point $a, Point $b) is export of Bool { ($a * $b) eq 0 }
-
-multi sub infix:<||> (Point $a, Point $b) is export of Bool { not $a L $b }
-
-multi sub angle(Point $a, Point $b) of Real is export {
-  ($a * $b) / ([*] ($a, $b)>>.&abs)
-}
-multi sub infix:<∠> (Point $a, Point $b) is export { angle $a, $b }
-
-multi sub infix:<x> (Point $a, Point $b) is export {
+multi infix:<x> (Point $a, Point $b) is export {
   [v] $a.y * $b.z - $a.z * $b.y
     , $a.z * $b.x - $a.x * $b.z
     , $a.x * $b.y - $a.y * $b.x

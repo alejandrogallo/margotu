@@ -7,7 +7,7 @@ Monoid role for main data structures
 
 
 role Monoid[::T] is export {
-  method mempty of T { ... }
+  method mempty of T { $?CLASS.new }
   method mappend(T $a --> T) { ... }
 }
 

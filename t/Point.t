@@ -14,6 +14,13 @@ subtest 'Point constructors', {
   is-deeply 1vy     , 0 v 1 v 0    , '1vy';
   is-deeply (1/2)vz , 0 v 0 v 1/2  , '1vz';
 
+  is-deeply Point.new([1]), 1vx, 'List constructor (1)';
+  is-deeply Point.new([1,2]), 1 v 2, 'List constructor (1,2)';
+  is-deeply Point.new([1,2,3]), ([<>] 1vx, 2vy, 3vz), 'List constructor (1,2,3)';
+
+  is-deeply v(1,2,3), ([<>] 1vx, 2vy, 3vz), 'List constructor (1,2,3)';
+
+
 };
 
 subtest 'Monoidal structure', {
@@ -48,6 +55,16 @@ subtest 'Operators', {
   is-deeply 1vy Rx 1vz , -1vx , "j Rx k = -x";
   is-deeply 1vz x 1vx  , 1vy  , "k x i = j";
   is-deeply 1vz Rx 1vx , -1vy , "k Rx i = -j";
+
+  is (angle 1vx, 1vy), pi/2, 'angle 1vx 1vy';
+  is (angle 1vx, 1vy), pi/2, 'angle 1vx 1vy';
+
+  is 1vx V 1vy      , pi/2 , '1vx V 1vy';
+  is 1vx ∠ 100vy    , pi/2 , '1vx ∠ 100vy';
+  is 1231vx.abs     , 1231 , '1vx ∠ 1vx';
+  is 123vx.abs      , 123  , '1vx ∠ 1vx';
+  is 1231vx ∠ 123vx , 0    , '1231vx ∠ 123vx';
+  is 1231vx ∠ 0vz   , 0    , '1231vx ∠ 0vz';
 
 };
 
